@@ -1,0 +1,76 @@
+CREATE TABLE tbclientes (
+	idcliente INT PRIMARY KEY,
+	nomecliente VARCHAR(50) NOT NULL,
+	cpfcliente BIGINT,
+	cnpjcliente BIGINT,
+	idadecliente INT CHECK (idadecliente > 0),
+	enderecocliente VARCHAR(50) NOT NULL,
+	telefonecliente BIGINT NOT NULL,
+	tipocliente VARCHAR(20) NOT NULL CHECK (tipocliente IN ('cliente', 'administrador'))
+);
+
+CREATE TABLE tbprodutos (
+	idproduto INT PRIMARY KEY,
+	nomeproduto VARCHAR(50) NOT NULL,
+	promocoesproduto VARCHAR(50) NOT NULL,
+	tipoproduto INT NOT NULL
+);
+
+CREATE TABLE tbpedidos (
+	idpedido INT PRIMARY KEY,
+	enderecoentrega VARCHAR(50),
+	taxaentrega INT NOT NULL,
+	movimento VARCHAR(8) NOT NULL CHECK (movimento IN ('entregar', 'retirar')),
+	tipopagamento VARCHAR(5) NOT NULL CHECK (tipopagamento IN ('dinheiro', 'pix')),
+	valor DECIMAL(7, 2) NOT NULL
+);
+
+CREATE TABLE tbenderecos (
+	cepcliente BIGINT PRIMARY KEY,
+	ruaresidencia VARCHAR(50) NOT NULL,
+	numeroresidencial INT NOT NULL,
+	bairrodaresidencia VARCHAR(50) NOT NULL,
+	complementoresidencial VARCHAR(40) NOT NULL
+);
+
+CREATE TABLE tb_cidades (
+	codcid INT PRIMARY KEY,
+	nomecid VARCHAR(50) NOT NULL,
+	estadocid VARCHAR(2) CHECK (estadocid = 'PR')
+);
+
+INSERT INTO tb_cidades (codcid, nomecid, estadocid) VALUES
+(1, 'Afonso Cláudio', 'PR'),
+(2, 'Água Doce do Norte', 'PR'),
+(3, 'Águia Branca', 'PR'),
+(4, 'Alegre', 'PR'),
+(5, 'Alfredo Chaves', 'PR'),
+(6, 'Alto Rio Novo', 'PR'),
+(7, 'Anchieta', 'PR'),
+(8, 'Apiacá', 'PR'),
+(9, 'Aracruz', 'PR'),
+(10, 'Atilio Vivacqua', 'PR');
+
+CREATE TABLE tbenderecoscliente (
+	cepcliente BIGINT,
+	idcliente INT,
+	PRIMARY KEY (cepcliente, idcliente),
+	CONSTRAINT fkenderecos FOREIGN KEY (cepcliente) REFERENCES tbenderecos (cepcliente),
+	CONSTRAINT fkcliente FOREIGN KEY (idcliente) REFERENCES tbclientes (idcliente)
+);
+
+CREATE TABLE tbprodutospedidos (
+	idproduto INT,
+	idpedido INT,
+	PRIMARY KEY (idproduto, idpedido),
+	CONSTRAINT fkproduto FOREIGN KEY (idproduto) REFERENCES tbprodutos (idproduto),
+	CONSTRAINT fkpedido FOREIGN KEY (idpedido) REFERENCES tbpedidos (idpedido)
+);
+
+CREATE TABLE tbpedidoscliente (
+	idpedido INT,
+	idcliente INT,
+	PRIMARY KEY (idpedido, idcliente),
+	CONSTRAINT fkpedido FOREIGN KEY (idpedido) REFERENCES tbpedidos (idpedido),
+	CONSTRAINT fkcliente FOREIGN KEY (idcliente) REFERENCES tbclientes (idcliente)
+);
